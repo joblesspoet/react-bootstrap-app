@@ -15,6 +15,7 @@ import Layout from "./components/Layout";
 import HomeNavBar from "./components/HomeNavBar";
 import { withStyles } from '@material-ui/core/styles';
 import Footer from "./components/Footer";
+import Progress from "./components/Progress";
 
 const useStyles = theme => ({
   
@@ -29,6 +30,14 @@ class Routes extends Component {
     this.handleClose = this.handleClose.bind(this);
   }
 
+  isLoading = () => {
+    const {isLoading} = this.props;
+
+    return isLoading ?
+    <Progress />
+    : null;
+  }
+
   handleClose() {
     this.setState({
       open: false
@@ -38,11 +47,11 @@ class Routes extends Component {
   componentDidMount() {}
 
   render() {
-    // const { is_logged_in } = this.props.auth;
     // const { classes } = this.props;
     return (
       <Layout>
         <HashRouter hashType="slash">
+          {this.isLoading()}
           <HomeNavBar />
           <React.Fragment>
             <Switch>
@@ -63,8 +72,6 @@ class Routes extends Component {
     );
   }
 }
-
-
 
 const mapStateToProps = state => {
   return {

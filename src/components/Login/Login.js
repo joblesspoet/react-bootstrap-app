@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Container from "@material-ui/core/Container";
-import Box from "@material-ui/core/Box";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -13,7 +12,6 @@ import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import { connect } from 'react-redux';
-import Progress from "../Progress";
 import {APP_NAME} from '../../config/config';
 
 const useStyles = theme => ({
@@ -40,27 +38,49 @@ class Login extends Component {
   
   constructor(props) {
     super(props)
+    this.state = {
+      email: '',
+      password: ''
+    }
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
-  }
-  componentDidMount() {
-    document.title = APP_NAME+" - Sign In";
+    this.onFieldChangeValue = this.onFieldChangeValue.bind(this);
   }
 
-  isLoading = () => {
-    return this.props.auth.isLoading ?
-    <Progress />
-    : null;
+  componentDidMount() {
+    document.title = APP_NAME+" - Sign In";
+    this.setState({
+      email: '',password: ''
+    });
   }
+
+  onFieldChangeValue = name => event => {
+    this.setState(
+      {[event.target.name]:event.target.value}
+    )
+  }
+
+  componentWillReceiveProps(nextprops){
+    // if user is logged in then
+    if(nextprops.auth.is_logged_in && nextprops.auth.user && nextprops.auth.user.id >0 
+       && !nextprops.auth.hasError){
+        // this.props.doSelectNavItem({index:0,current_path:'/admin/welcome'});
+        this.setState({
+          email: '', password: ''
+        })
+        this.props.history.push('/dashboard');
+        return;
+    }
+}
 
   handleFormSubmit = (event) => {
     event.preventDefault();
-    alert("Hi I'm submitted");
+    alert("Hi I'm submitted"+JSON.stringify(this.state));
   }
   render() {
     const { classes } = this.props;
     return (
       <React.Fragment>
-        {this.isLoading()}
+        
         <Container component="main" maxWidth="xs">
           <div className={classes.paper}>
             <Avatar className={classes.avatar}>
@@ -80,6 +100,7 @@ class Login extends Component {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                onChange={this.onFieldChangeValue('email')}
               />
               <TextField
                 variant="outlined"
@@ -91,6 +112,7 @@ class Login extends Component {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                onChange={this.onFieldChangeValue('password')}
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
